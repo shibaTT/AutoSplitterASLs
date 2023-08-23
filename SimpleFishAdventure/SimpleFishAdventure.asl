@@ -1,25 +1,19 @@
 state("Simple Fish Adventure")
 {
-	int   checkpoint               : 0x00; // 現在のチェックポイント
-	int   isInited                 : 0x01; // 初期化フラグ
+	// CheckpointNow
+	int checkpoint: "UnityPlayer.dll", 0x013A9FD0, 0x0, 0x24, 0x18, 0xC, 0x6C;
+	int isInited: "UnityPlayer.dll", 0x013A9FD0, 0x0, 0x24, 0x18, 0xC, 0x70;
 }
-
-/**
- * やりたいこと
- *
- * ・できるならどっかからIGT（In Game Time）を取ってきたい
- * ・メニュー画面にいるかどうかを把握できる変数が欲しい
- */
 
 init
 {
-	vars.checkpoint = 0; // チェックポイントは10個（+ゴール）
+	vars.checkpoint = 0;
 	vars.timerModel = new TimerModel { CurrentState = timer };
 }
 
 update
 {
-	// リセット処理
+	// Reset
 	if (current.checkpoint == 0 && current.isInited == 0)
 	{
 		vars.checkpoint = 0;
@@ -29,6 +23,8 @@ update
 
 start
 {
+	// print("test" + current.checkpoint);
+	// print("" + current.isInited);
 	if (current.checkpoint == 0 && old.isInited == 0 && current.isInited != 0)
 	{
 		vars.checkpoint = current.checkpoint;
@@ -40,13 +36,15 @@ split
 {
 	if (current.checkpoint > vars.checkpoint)
 	{
+		print("split!");
 		vars.checkpoint = current.checkpoint;
 		return true;
 	}
 
-	// チェックポイントが10から0になった時はゴールしたという意味
+	// Goal
 	if (vars.checkpoint == 10 && current.checkpoint == 0 && current.isInited != 0)
 	{
+		print("End!");
 		return true;
 	}
 }
